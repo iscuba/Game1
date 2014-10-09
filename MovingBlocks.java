@@ -10,7 +10,9 @@ package movingblocks;
  *
  * @author Isabella
  */
-public class MovingBlocks {
+public class MovingBlocks { 
+    
+     
 
     /**
      * @param args the command line arguments
