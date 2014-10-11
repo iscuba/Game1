@@ -21,19 +21,16 @@ public class Block {
 
     // like equal? 
     public boolean isTaken(Block block) {
-        if ((block.x == this.x) && (block.y == this.y)) {
-            return true;
-        } else {
-            return false;
-        }
+        return ((block.x == this.x) && (block.y == this.y));
     }
-    
-    public boolean isNotTop(Block block){
+
+    public boolean isNotTop(Block block) {
         return !(this.x == block.x);
     }
-    
-        public boolean isTop(Block block){
+
+    public boolean isTop(Block block) {
         return (this.x == block.x);
     }
+    
 
 }
