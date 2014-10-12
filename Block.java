@@ -47,5 +47,6 @@ public class Block {
     public RectangleImage makeBlock(){
         return new RectangleImage(new Posn(x*10, y*10),10,10,new Green());
     }
+    
 
 }

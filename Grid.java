@@ -74,7 +74,7 @@ public class Grid extends World {
     //     THEN: don't add any of these stray blocks to the dead block list.
     // checkBlockArray looks where the MovingArray was stopped and adds/ doesnt
     //  add the blocks to the dead block list.
-    public void changeBlockArray() {
+    public Grid changeBlockArray() {
         // Checking like this means that My blocks are going to move in a 
         //   "block grid" so make them move block by block.
         int why = deadBlocks.get(0).y;
@@ -90,6 +90,7 @@ public class Grid extends World {
                 }
             }
         }
+        return new Grid(movingBlocks, deadBlocks);
     }
 
     public boolean LooseHuh() {
@@ -107,9 +108,9 @@ public class Grid extends World {
 
     public boolean offRightGridHuh() {
         int num = movingBlocks.size() - 1;
-        return (movingBlocks.get(num).x <= 11);
+        return (movingBlocks.get(num).x >= 11);
     }
-    
+
     // made this return a new grid so that
     public Grid moveBlocks(String direction) {
         if (direction.equals("right")) {
@@ -123,18 +124,16 @@ public class Grid extends World {
                 movingBlocks.get(i).x--;
             }
         }
-        return new Grid(movingBlocks,deadBlocks);
+        return new Grid(movingBlocks, deadBlocks);
     }
 
+    //how do I get this to work?
     public World onTick() {
-        //if the blocks are out of bounds make them switch direction they are moving. 
-        do {
-            return moveBlocks("right");
-        } while (!offRightGridHuh());
-        do {
-            return moveBlocks("left");
-        } while (!offLeftGridHuh());
-
+        if (LooseHuh()) {
+            return this.endOfWorld("You loose");
+        } else {
+            return moveBlocks2();
+        }
     }
 
     public WorldImage backdrop = new RectangleImage(new Posn(0, 0), 120, 150, new Black());
@@ -152,10 +151,29 @@ public class Grid extends World {
     public World onKeyEvent(String ke) {
         if (ke.equals("x")) {
             return this.endOfWorld("Goodbye");
+        } else if (ke.equals("s")) {
+            return changeBlockArray();
         } else {
-            return this;
+            return this.moveBlocks(ke);
 //            return new Grid(this.movingBlocks.moveBlocks(ke));
         }
+    }
+
+    public Grid moveBlocks2() {
+        if (offRightGridHuh()) {
+            do {
+                for (int i = 0; i < movingBlocks.size(); i++) {
+                    movingBlocks.get(i).x--;
+                }
+            } while (movingBlocks.get(0).x != 0);
+        } else {
+            do {
+                for (int i = 0; i < movingBlocks.size(); i++) {
+                    movingBlocks.get(i).x++;
+                }
+            } while (movingBlocks.get(movingBlocks.size() - 1).x < 12);
+        }
+        return new Grid(movingBlocks, deadBlocks);
     }
 
 
