@@ -129,13 +129,15 @@ public class Grid extends World {
     public World onTick() {
         //if the blocks are out of bounds make them switch direction they are moving. 
         do {
-            moveBlock("right");
+            return moveBlocks("right");
         } while (!offRightGridHuh());
+        do {
+            return moveBlocks("left");
+        } while (!offLeftGridHuh());
 
     }
 
     public WorldImage backdrop = new RectangleImage(new Posn(0, 0), 120, 150, new Black());
-//        public WorldImage = new OverlayImage()
 
     public WorldImage makeImage() {
         for (int i = 0; i < movingBlocks.size(); i++) {
@@ -151,7 +153,7 @@ public class Grid extends World {
         if (ke.equals("x")) {
             return this.endOfWorld("Goodbye");
         } else {
-            return 
+            return this;
 //            return new Grid(this.movingBlocks.moveBlocks(ke));
         }
     }
