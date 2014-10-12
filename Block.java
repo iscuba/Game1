@@ -5,6 +5,16 @@
  */
 package movingblocks;
 
+
+import java.awt.Color;
+import java.util.Random;
+
+import tester.*;
+
+import javalib.funworld.*;
+import javalib.colors.*;
+import javalib.worldcanvas.*;
+import javalib.worldimages.*;
 /**
  *
  * @author Isabella
@@ -13,10 +23,12 @@ public class Block {
 
     public int x;
     public int y;
+//    public Posn position;
 
     public Block(int x, int y) {
         this.x = x;
         this.y = y;
+//        this.position = new Posn(x, y);
     }
 
     // like equal? 
@@ -32,5 +44,9 @@ public class Block {
         return (this.x == block.x);
     }
     
+    public RectangleImage blockImage(){
+        Posn coor = new Posn(x*10, y*10);
+        return new RectangleImage(coor,10,10,new Green() );
+    }
 
 }
