@@ -40,13 +40,12 @@ public class Block {
         return !(this.x == block.x);
     }
 
-    public boolean isTop(Block block) {
+    public boolean isTop(Block block) { 
         return (this.x == block.x);
     }
-    
-    public RectangleImage blockImage(){
-        Posn coor = new Posn(x*10, y*10);
-        return new RectangleImage(coor,10,10,new Green() );
+   
+    public RectangleImage makeBlock(){
+        return new RectangleImage(new Posn(x*10, y*10),10,10,new Green());
     }
 
 }
