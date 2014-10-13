@@ -25,8 +25,8 @@ public class Grid extends World {
     int width = 12;
     int height = 15;
 
-    private ArrayList<Block> movingBlocks;
-    private ArrayList<Block> deadBlocks;
+    public ArrayList<Block> movingBlocks;
+    public ArrayList<Block> deadBlocks;
 
     public Grid(ArrayList<Block> moving, ArrayList<Block> dead) {
         super();
@@ -36,26 +36,29 @@ public class Grid extends World {
 //Both add functions add at the front of the arrayList 
 
     public ArrayList<Block> addDeadBlock(Block block) {
-        for (int i = 0; i < deadBlocks.size(); i++) {
-            if (deadBlocks.get(i).isTaken(block)) {
-                break;
-            } else {
-                deadBlocks.add(0, block);
-            }
-        }
+        deadBlocks.add(block);
+//        for (int i = 0; i < deadBlocks.size(); i++) {
+//            if (deadBlocks.get(i).isTaken(block)) {
+//                break;
+//            } else {
+//                deadBlocks.add(0, block);
+//            }
+//        }
         return deadBlocks;
     }
 
     public ArrayList<Block> addLiveBlock(Block block) {
-        for (int i = 0; i < movingBlocks.size(); i++) {
-            if (movingBlocks.get(i).isTaken(block)) {
-                break;
-            } else {
-                movingBlocks.add(0, block);
-                movingBlocks.trimToSize();
-            }
-        }
+        movingBlocks.add(block);
         return movingBlocks;
+//        for (int i = 0; i < movingBlocks.size(); i++) {
+//            if (movingBlocks.get(i).isTaken(block)) {
+//                break;
+//            } else {
+//                movingBlocks.add(0, block);
+//                movingBlocks.trimToSize();
+//            }
+//        }
+//        return movingBlocks;
     }
 
     public ArrayList<Block> removeLiveBlock(Block block) {
@@ -119,21 +122,7 @@ public class Grid extends World {
     }
 
     // made this return a new grid so that
-    public Grid moveBlocks(String direction) {
-        if (direction.equals("right")) {
-            for (int i = 0; i <= (movingBlocks.size() - 1); i++) {
-                //add "1" to the x value of each block
-                movingBlocks.get(i).x++;
-            }
-        } else {
-            for (int i = 0; i <= (movingBlocks.size() - 1); i++) {
-                //add "1" to the x value of each block
-                movingBlocks.get(i).x--;
-            }
-        }
-        return new Grid(movingBlocks, deadBlocks);
-    }
-
+    
     //how do I get this to work?
     public World onTick() {
         if (LooseHuh()) {
@@ -142,7 +131,7 @@ public class Grid extends World {
             return this.endOfWorld("WINNER!");
 
         } else {
-            return moveBlocks2();
+            return moveOneWay();
         }
     }
 
@@ -151,7 +140,7 @@ public class Grid extends World {
     public WorldImage makeImage() {
         for (int i = 0; i < movingBlocks.size(); i++) {
             WorldImage b = movingBlocks.get(i).makeBlock();
-            new OverlayImages(backdrop,b);
+            new OverlayImages(backdrop, b);
         }
         for (int j = 0; j < deadBlocks.size(); j++) {
             return new OverlayImages(backdrop, deadBlocks.get(j).makeBlock());
@@ -167,41 +156,25 @@ public class Grid extends World {
         } else if (ke.equals("s")) {
             return changeBlockArray();
         } else {
-            return this.moveBlocks2();
+            return this.moveOneWay();
 //            return new Grid(this.movingBlocks.moveBlocks(ke));
         }
     }
 
-    // This looks like it should be recursive for it to work 
-    public Grid moveBlocks2() {
-        if (offRightGridHuh()) {
-            do {
-                for (int i = 0; i < movingBlocks.size(); i++) {
-                    movingBlocks.get(i).x--;
-                }
-            } while (movingBlocks.get(0).x != 0);
-        } else if (offLeftGridHuh()) {
-            do {
-                for (int i = 0; i < movingBlocks.size(); i++) {
-                    movingBlocks.get(i).x++;
-                }
-            } while (movingBlocks.get(movingBlocks.size() - 1).x < 12);
-        }
-        return new Grid(movingBlocks, deadBlocks);
-    }
-
+    
     // might be easier to only move the blocks right, and have them wrap the screen 
+
     public Grid moveOneWay() {
-        ArrayList<Block> temp = new ArrayList<>(movingBlocks.size());
         for (int i = 0; i < movingBlocks.size(); i++) {
-            int ex = movingBlocks.get(i).x++;
+            int x = movingBlocks.get(i).x;
+            int ex = x + 1;
             int why = movingBlocks.get(i).y;
-            if (ex > width) {
-                temp.set(i,new Block(1,why));
+            if (ex >= width) {
+                movingBlocks.set(i, new Block(1,why));
             } else {
-                temp.set(i, new Block(ex, why));
+                movingBlocks.set(i, new Block(ex, why));
             }
-            movingBlocks = temp;
+            
         }
         return new Grid(movingBlocks, deadBlocks);
     }
@@ -267,5 +240,70 @@ public class Grid extends World {
      }
      }
     
+        public Grid moveOneWay() {
+        ArrayList<Block> temp = new ArrayList<>();
+        System.out.println("size of moving Blocks: " + movingBlocks.size());
+        System.out.println("size of temp: " + temp.size());
+        for (int i = 0; i < movingBlocks.size(); i++) {
+            int x = movingBlocks.get(i).x++;
+            int ex = x+1;
+            int why = movingBlocks.get(i).y;
+            if (ex >= width) {
+                temp.add(i, new Block(1, why));
+            } else {
+                temp.add(i, new Block(ex, why));
+            }
+            System.out.println("size of temp: " + temp.size());
+            movingBlocks = temp;
+        }
+        return new Grid(movingBlocks, deadBlocks);
+    }
+    
+    public Grid moveBlocks(String direction) {
+        if (direction.equals("right")) {
+            for (int i = 0; i <= (movingBlocks.size() - 1); i++) {
+                //add "1" to the x value of each block
+                movingBlocks.get(i).x++;
+            }
+        } else {
+            for (int i = 0; i <= (movingBlocks.size() - 1); i++) {
+                //add "1" to the x value of each block
+                movingBlocks.get(i).x--;
+            }
+        }
+        return new Grid(movingBlocks, deadBlocks);
+    }
+    
+    // This DOES NOT WORK 
+    // This looks like it should be recursive for it to work 
+    public Grid moveBlocks2() {
+        if (offRightGridHuh()) {
+            do {
+                for (int i = 0; i < movingBlocks.size(); i++) {
+                    movingBlocks.get(i).x--;
+                }
+            } while (movingBlocks.get(0).x != 0);
+        } else if (offLeftGridHuh()) {
+            do {
+                for (int i = 0; i < movingBlocks.size(); i++) {
+                    movingBlocks.get(i).x++;
+                }
+            } while (movingBlocks.get(movingBlocks.size() - 1).x < 12);
+        }
+        return new Grid(movingBlocks, deadBlocks);
+    }
+
+    // For testing? Maybe Later I will need it
+    public Grid makeAGrid() {
+        Block block1 = new Block(5, 5);
+        ArrayList<Block> array1 = new ArrayList<>(1);
+        ArrayList<Block> array2 = new ArrayList();
+        Grid testGrid = new Grid(array1, array2);
+        testGrid.addLiveBlock(block1);
+        return testGrid;
+    }
+    
      */
+    
+    
 }
