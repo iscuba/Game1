@@ -150,12 +150,14 @@ public class Grid extends World {
 
     public WorldImage makeImage() {
         for (int i = 0; i < movingBlocks.size(); i++) {
-            WorldImage b = movingBlocks.get(i).makeBlock;
-            OverlayImages(backdrop, movingBlocks.get(i).makeBlock());
+            WorldImage b = movingBlocks.get(i).makeBlock();
+            new OverlayImages(backdrop,b);
         }
         for (int j = 0; j < deadBlocks.size(); j++) {
-            return OverImages(backdrop, deadBlocks.get(j).makeBlock());
+            return new OverlayImages(backdrop, deadBlocks.get(j).makeBlock());
         }
+        /// CHANGE!!! DO not trust 
+        return backdrop;
 
     }
 
@@ -165,7 +167,7 @@ public class Grid extends World {
         } else if (ke.equals("s")) {
             return changeBlockArray();
         } else {
-            return this.moveBlocks(ke);
+            return this.moveBlocks2();
 //            return new Grid(this.movingBlocks.moveBlocks(ke));
         }
     }
@@ -184,6 +186,22 @@ public class Grid extends World {
                     movingBlocks.get(i).x++;
                 }
             } while (movingBlocks.get(movingBlocks.size() - 1).x < 12);
+        }
+        return new Grid(movingBlocks, deadBlocks);
+    }
+
+    // might be easier to only move the blocks right, and have them wrap the screen 
+    public Grid moveOneWay() {
+        ArrayList<Block> temp = new ArrayList<>(movingBlocks.size());
+        for (int i = 0; i < movingBlocks.size(); i++) {
+            int ex = movingBlocks.get(i).x++;
+            int why = movingBlocks.get(i).y;
+            if (ex > width) {
+                temp.set(i,new Block(1,why));
+            } else {
+                temp.set(i, new Block(ex, why));
+            }
+            movingBlocks = temp;
         }
         return new Grid(movingBlocks, deadBlocks);
     }

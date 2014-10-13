@@ -30,10 +30,6 @@ public class Block {
         this.y = y;
 //        this.position = new Posn(x, y);
     }
-    
-    public WorldImage drawBlock(){
-        return new RectangleImage(new Posn(this.x, this.y),10,10, new Green());
-    }
 
     // like equal? 
     public boolean isTaken(Block block) {
@@ -47,8 +43,8 @@ public class Block {
     public boolean isTop(Block block) { 
         return (this.x == block.x);
     }
-   
-    public WorldImage makeBlock(){
+
+    public RectangleImage makeBlock(){
         return new RectangleImage(new Posn(this.x*10, this.y*10),10,10,new Green());
     }
     
