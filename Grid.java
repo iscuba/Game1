@@ -35,7 +35,7 @@ public class Grid extends World {
     }
 //Both add functions add at the front of the arrayList 
 
-    public void addDeadBlock(Block block) {
+    public ArrayList<Block> addDeadBlock(Block block) {
         for (int i = 0; i < deadBlocks.size(); i++) {
             if (deadBlocks.get(i).isTaken(block)) {
                 break;
@@ -43,9 +43,10 @@ public class Grid extends World {
                 deadBlocks.add(0, block);
             }
         }
+        return deadBlocks;
     }
 
-    public void addLiveBlock(Block block) {
+    public ArrayList<Block> addLiveBlock(Block block) {
         for (int i = 0; i < movingBlocks.size(); i++) {
             if (movingBlocks.get(i).isTaken(block)) {
                 break;
@@ -54,9 +55,10 @@ public class Grid extends World {
                 movingBlocks.trimToSize();
             }
         }
+        return movingBlocks;
     }
 
-    public void removeLiveBlock(Block block) {
+    public ArrayList<Block> removeLiveBlock(Block block) {
         for (int i = 0; i < movingBlocks.size(); i++) {
             if (movingBlocks.get(i).isTaken(block)) {
                 //might be remove(block) but also that might not work 
@@ -65,6 +67,7 @@ public class Grid extends World {
                 break;
             }
         }
+        return movingBlocks;
     }
 
     // When the user clicks the stop, the drawing code needs to check:
@@ -97,6 +100,10 @@ public class Grid extends World {
         return movingBlocks.isEmpty();
     }
 
+    public boolean WinHuh() {
+        return deadBlocks.get(deadBlocks.size() - 1).y == 15;
+    }
+
     //Defines when the movingBlocks should bounce off the side of the grid and 
     //  change direction using block units
     // since we are checking where the center of the squares, it will appear that 
@@ -108,7 +115,7 @@ public class Grid extends World {
 
     public boolean offRightGridHuh() {
         int num = movingBlocks.size() - 1;
-        return (movingBlocks.get(num).x >= 11);
+        return (movingBlocks.get(num).x >= width - 1);
     }
 
     // made this return a new grid so that
@@ -131,6 +138,9 @@ public class Grid extends World {
     public World onTick() {
         if (LooseHuh()) {
             return this.endOfWorld("You loose");
+        } else if (WinHuh()) {
+            return this.endOfWorld("WINNER!");
+
         } else {
             return moveBlocks2();
         }
@@ -140,6 +150,7 @@ public class Grid extends World {
 
     public WorldImage makeImage() {
         for (int i = 0; i < movingBlocks.size(); i++) {
+            WorldImage b = movingBlocks.get(i).makeBlock;
             OverlayImages(backdrop, movingBlocks.get(i).makeBlock());
         }
         for (int j = 0; j < deadBlocks.size(); j++) {
@@ -159,6 +170,7 @@ public class Grid extends World {
         }
     }
 
+    // This looks like it should be recursive for it to work 
     public Grid moveBlocks2() {
         if (offRightGridHuh()) {
             do {
@@ -166,7 +178,7 @@ public class Grid extends World {
                     movingBlocks.get(i).x--;
                 }
             } while (movingBlocks.get(0).x != 0);
-        } else {
+        } else if (offLeftGridHuh()) {
             do {
                 for (int i = 0; i < movingBlocks.size(); i++) {
                     movingBlocks.get(i).x++;
