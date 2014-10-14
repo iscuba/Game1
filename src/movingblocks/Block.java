@@ -32,7 +32,7 @@ public class Block {
     }
 
     // like equal? 
-    public boolean isTaken(Block block) {
+    public boolean equalBlock(Block block) {
         return ((block.x == this.x) && (block.y == this.y));
     }
 
@@ -40,13 +40,14 @@ public class Block {
         return !(this.x == block.x);
     }
 
-    public boolean isTop(Block block) { 
-        return (this.x == block.x);
+    public boolean isOnTop(Block block) { 
+        return (this.x == block.x) && (this.y + 1 == block.y);
     }
 
     public RectangleImage makeBlock(){
         return new RectangleImage(new Posn(this.x*10, this.y*10),10,10,new Green());
     }
+    
     
 
 }
