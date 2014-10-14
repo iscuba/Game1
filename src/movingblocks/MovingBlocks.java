@@ -15,6 +15,7 @@ import javalib.funworld.*;
 import javalib.colors.*;
 import javalib.worldcanvas.*;
 import javalib.worldimages.*;
+import static movingblocks.Grid.testGrid;
 
 /**
  *
@@ -30,17 +31,8 @@ public class MovingBlocks {
         
         
         // tests the whether one block is able to move
-        Block block1 = new Block(5, 5);
-        ArrayList<Block> array1 = new ArrayList<>(1);
-        ArrayList<Block> array2 = new ArrayList();
-        Grid testGrid1 = new Grid(array1, array2);
-        Grid testGrid2 = new Grid(testGrid1.addLiveBlock(block1), array2);
-        System.out.println("the first X Value is 5 : " + testGrid2.movingBlocks.get(0).x
-                + " The Moved x value should be 6 : " + testGrid2.moveOneWay().movingBlocks.get(0).x);
-
-        System.out.println("the first X Value is 6 : " + testGrid2.movingBlocks.get(0).x
-                + " The Moved x value should be 7 : " + testGrid2.moveOneWay().movingBlocks.get(0).x);
-
+        Grid game = new Grid();
+        game.bigBang(250, 400, .2);
         // Testing the ChangeBlockArray
         testGrid();
 

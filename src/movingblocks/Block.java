@@ -44,8 +44,8 @@ public class Block {
         return (this.x == block.x) && (this.y + 1 == block.y);
     }
 
-    public RectangleImage makeBlock(){
-        return new RectangleImage(new Posn(this.x*10, this.y*10),10,10,new Green());
+    public FrameImage makeBlock(){
+        return new FrameImage(new Posn(this.x*20, this.y*20),20,20,new Green());
     }
     
     
