@@ -6,14 +6,8 @@
 package movingblocks;
 
 import java.util.ArrayList;
-import java.awt.Color;
-import java.util.Random;
-
-import tester.*;
-
 import javalib.funworld.*;
 import javalib.colors.*;
-import javalib.worldcanvas.*;
 import javalib.worldimages.*;
 
 /**
@@ -117,9 +111,8 @@ public class Grid extends World {
     
     public WorldImage back = new RectangleImage(new Posn(0,0),500,810, new Black());
     public WorldImage frame = new FrameImage(new Posn(0, 0), 460, 660, new Blue());
-    public WorldImage scoreKeep = new TextImage(new Posn(230, 700), "Score: " /*+ countDeadBlocks()*/, 30, new Red());
-    public WorldImage backScore = new OverlayImages(back, scoreKeep);
-    public WorldImage backdrop = new OverlayImages(backScore,frame);
+    public WorldImage backFrame = new OverlayImages(back,frame);
+    public WorldImage backdrop = new OverlayImages(back, frame);
     
 
     public WorldImage makeImage() {
@@ -131,7 +124,8 @@ public class Grid extends World {
             WorldImage pic = deadBlocks.get(j).makeBlock();
             backdrop = new OverlayImages(backdrop, pic);
         }
-        return backdrop;
+        WorldImage score = new TextImage(new Posn(230, 600), "Score: " + deadBlocks.size(), 13, -1, new Red());
+        return new OverlayImages( backdrop, score);
 
     }
     
@@ -246,160 +240,4 @@ public class Grid extends World {
                 + "(" + afterChange.deadBlocks.get(0).x + "," + afterChange.deadBlocks.get(0).y + ") ("
                 + afterChange.deadBlocks.get(1).x + ", " + afterChange.deadBlocks.get(1).y + ")");
     }
-
-
-    /*  FUNCTION CEMETARY
-
-     // how many blocks should he new array have? 
-     // Well,,:
-     // how many blocks, with the max Y value, are on the deadblocks list?
-     //I dont need this function.. change block array does it all 
-     public void newLiveBlocks() {
-     int maxy = deadBlocks.get(0).y;
-     int countWhy = countBlocks(deadBlocks, maxy);
-     /// CHANGE What do I use for x values?? ehh  could use i since thats 
-     //getting bigger in the for loop       
-     //int ex = 0;
-     // plus 1 block length 
-     int why = (deadBlocks.get(0).y + 1);
-     // is this where I decide where I want to spawn the new blocks?
-     for (int i = 0; i <= countWhy; i++) {
-     addLiveBlock(new Block(i, why));
-     }
-     }
-
-     //when to end the game:
-     //    sees if all the blocks in movingBlocks are off the dead blocks
-     // make arraylist of booleans to hold 
-     //   ** what do I call this function on? do I have to call it on something? 
-     public ArrayList allBlocksOffHuh() {
-     // can I just say when newLiveBlocks() = 0 
-        
-     // or if movingBlocks is empty.. since i have a function that sets the 
-     //      arrays to what they need to be.
-     int why = deadBlocks.get(0).y;
-     ArrayList arrlist = new ArrayList();
-     for (int i = 0; i < movingBlocks.size(); i++) {
-     for (int j = 0; j < deadBlocks.size(); j++) {
-     //"b" would be outside of its local defn 
-     boolean b = (movingBlocks.get(i).isTop(deadBlocks.get(j)) && deadBlocks.get(j).y == why);
-     return b;
-     } 
-     // I want to set the arraylist at position i to be the return value of the for loop
-     arrlist.set(i,/*what do i say ??);
-     }
-     return arrlist;
-     }
-     //Counts how many blocks' y values are equal to "why" so tells us how many
-     //   new blocks to add to movingBlocks 
-     public int countBlocks(ArrayList<Block> blocklist, int why) {
-     int count = 0;
-     for (int i = 0; i > blocklist.size(); i++) {
-     if (blocklist.get(i).y == why) {
-     count++;
-     }
-     }
-     return count;
-     }
-
-     public WorldImage makeArrayImage(ArrayList<Block> arrayl){
-     for (int i=0; i<arrayl.size();i++ ){
-     arrayl.get(i).blockImage();
-     }
-     }
-    
-     public Grid moveOneWay() {
-     ArrayList<Block> temp = new ArrayList<>();
-     System.out.println("size of moving Blocks: " + movingBlocks.size());
-     System.out.println("size of temp: " + temp.size());
-     for (int i = 0; i < movingBlocks.size(); i++) {
-     int x = movingBlocks.get(i).x++;
-     int ex = x+1;
-     int why = movingBlocks.get(i).y;
-     if (ex >= width) {
-     temp.add(i, new Block(1, why));
-     } else {
-     temp.add(i, new Block(ex, why));
-     }
-     System.out.println("size of temp: " + temp.size());
-     movingBlocks = temp;
-     }
-     return new Grid(movingBlocks, deadBlocks);
-     }
-    
-     public Grid moveBlocks(String direction) {
-     if (direction.equals("right")) {
-     for (int i = 0; i <= (movingBlocks.size() - 1); i++) {
-     //add "1" to the x value of each block
-     movingBlocks.get(i).x++;
-     }
-     } else {
-     for (int i = 0; i <= (movingBlocks.size() - 1); i++) {
-     //add "1" to the x value of each block
-     movingBlocks.get(i).x--;
-     }
-     }
-     return new Grid(movingBlocks, deadBlocks);
-     }
-    
-     // This DOES NOT WORK 
-     // This looks like it should be recursive for it to work 
-     public Grid moveBlocks2() {
-     if (offRightGridHuh()) {
-     do {
-     for (int i = 0; i < movingBlocks.size(); i++) {
-     movingBlocks.get(i).x--;
-     }
-     } while (movingBlocks.get(0).x != 0);
-     } else if (offLeftGridHuh()) {
-     do {
-     for (int i = 0; i < movingBlocks.size(); i++) {
-     movingBlocks.get(i).x++;
-     }
-     } while (movingBlocks.get(movingBlocks.size() - 1).x < 12);
-     }
-     return new Grid(movingBlocks, deadBlocks);
-     }
-
-     // For testing? Maybe Later I will need it
-     public Grid makeAGrid() {
-     Block block1 = new Block(5, 5);
-     ArrayList<Block> array1 = new ArrayList<>(1);
-     ArrayList<Block> array2 = new ArrayList();
-     Grid testGrid = new Grid(array1, array2);
-     testGrid.addLiveBlock(block1);
-     return testGrid;
-     }
-    
-     public Grid changeBlockArray() {
-     // Checking like this means that My blocks are going to move in a 
-     //   "block grid" so make them move block by block.
-     int why = deadBlocks.get(0).y;
-     System.out.println("why in changeBlockArray is " + why);
-     //look at the deadBlock array and determine the highest Y value to usein the loop 
-     System.out.println("DeadBlocks size is:" + deadBlocks.size());
-     System.out.println("MovingBlocks size is:" + movingBlocks.size());
-     for (int i = 0; i < movingBlocks.size(); i++) {
-     for (int j = 0; j < deadBlocks.size(); j++) {
-     //although this will look through all the blocks to check, and it shouldn't have to 
-     if (!movingBlocks.get(i).isOnTop(deadBlocks.get(j))) {
-     System.out.println("removing the live block W/O adding ");
-     movingBlocks = removeLiveBlock(movingBlocks.get(i));
-     } else {
-     System.out.println("time doing inner loop: " + j);
-     int blX = movingBlocks.get(i).x + 1;
-     int blY = movingBlocks.get(i).y + 1;
-     System.out.println("making the new block at point: (" + blX + ", " + blY + ") ");
-     movingBlocks = addLiveBlock(new Block(blX, blY));
-     deadBlocks = addDeadBlock(movingBlocks.get(i));
-     movingBlocks = removeLiveBlock(movingBlocks.get(i));
-
-     }
-     System.out.println("time doing the outer i loop: " + j);
-     }
-     }
-     return new Grid(movingBlocks, deadBlocks);
-     }
-    
-     */
 }
