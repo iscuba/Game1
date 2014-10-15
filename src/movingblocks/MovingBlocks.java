@@ -23,10 +23,12 @@ public class MovingBlocks {
         
         // tests the whether one block is able to move
         Grid game = new Grid();
-        game.bigBang(250, 400, .2);
+        game.bigBang(230, 345, .1);
         // Testing the ChangeBlockArray
-        testGrid();
+        System.out.println("\nTesting for my Block class: \n");
         testBlock();
+        System.out.println("\nTesting for my Grid class: \n");
+        testGrid();
 
 
     }

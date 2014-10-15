@@ -77,21 +77,8 @@ public class Grid extends World {
         }
         return new Grid(tempMove, tempDead);
     }
-
-//    public boolean offLeftGridHuh() {
-//        int num = movingBlocks.size() - 1;
-//        return (movingBlocks.get(num).x <= 1);
-//    }
-//
-//    public boolean offRightGridHuh() {
-//        int num = movingBlocks.size() - 1;
-//        return (movingBlocks.get(num).x >= width - 1);
-//    }
-    public int countDeadBlocks() {
-        return deadBlocks.size();
-    }
-
-    public WorldImage back = new RectangleImage(new Posn(0, 0), 500, 810, new Black());
+    
+    public WorldImage back = new RectangleImage(new Posn(0, 40), 465, 665, new Black());
     public WorldImage frame = new FrameImage(new Posn(0, 0), 460, 660, new Blue());
     public WorldImage backFrame = new OverlayImages(back, frame);
     public WorldImage backdrop = new OverlayImages(back, frame);
@@ -129,7 +116,7 @@ public class Grid extends World {
     }
 
     public boolean WinHuh() {
-        return deadBlocks.get(deadBlocks.size() - 1).y >= 16;
+        return deadBlocks.get(deadBlocks.size() - 1).y > 15;
     }
 
     public Grid onTick() {
@@ -158,44 +145,6 @@ public class Grid extends World {
         return new Grid(movingBlocks, deadBlocks);
     }
 
-    public ArrayList<Block> addDeadBlock(Block block) {
-        ArrayList<Block> temp = new ArrayList();
-        for (int i = 0; i < deadBlocks.size(); i++) {
-            temp.add(deadBlocks.get(i));
-        }
-        temp.add(block);
-        return temp;
-    }
-
-    public ArrayList<Block> addLiveBlock(Block block) {
-        ArrayList<Block> temp = new ArrayList();
-        for (int i = 0; i < movingBlocks.size(); i++) {
-            temp.add(i, movingBlocks.get(i));
-        }
-        temp.add(block);
-        return temp;
-
-    }
-
-    public ArrayList<Block> removeLiveBlock(Block block) {
-        ArrayList<Block> temp = new ArrayList();
-        for (int i = 0; i < movingBlocks.size(); i++) {
-            if (!movingBlocks.get(i).equalBlock(block)) {
-                temp.add(i, movingBlocks.get(i));
-            } else {
-            }
-        }
-        return temp;
-
-    }
-
-    //For testing fun!!
-    private static Grid MTGrid() {
-        ArrayList<Block> live = new ArrayList<>();
-        ArrayList<Block> dead = new ArrayList<>();
-        return new Grid(live, dead);
-    }
-
     //makes a grid with 2 stached blocks at a random position. 
     public static Grid makeRandStackGrid() {
         Block randBlock = makeRandomBlock();
@@ -210,85 +159,40 @@ public class Grid extends World {
 
     public static void testGrid() {
 
-        
         int runTimes = 10;
         for (int i = 0; i <= runTimes; i++) {
-        // Tests onKey when the world is sopped by the user and blocks are stacked. 
-        //there are 2 blocks in g one in L and one in D. if you call g.onKey"s" and the blocks
-        // are on top of eachother, then the size of that, would have to be >= g.D + 1
+       
             Grid testerGrid = makeRandStackGrid();
             Grid changedGrid = testerGrid.onKeyEvent("s");
-            System.out.println("the size of deadBlocks of the first Grid should be <= the size of the moved grid:  and is: "
+            System.out.println("the size of deadBlocks of the first Grid should be <= the size of the moved grid. This is: "
                     + (testerGrid.deadBlocks.size() <= changedGrid.deadBlocks.size()));
-        // Tests onKey when the world is stopped by the used and the blocks are not stacked. 
+        // Tests onKey when the world is stopped by the used and the blocks are not stacked.            
+            ArrayList<Block> arr = new ArrayList();
+            Block ran = makeRandomBlock();
+            arr.add(ran);
+            ArrayList<Block> arr2 = new ArrayList();
+            arr2.add(new Block(ran.x + 1, ran.y + 1));
+            Grid gir = new Grid(arr, arr2);
+            Grid gir2 = gir.onKeyEvent("s");
+            System.out.println("Did we Loose the game? should be true: " + gir2.movingBlocks.isEmpty());
 
-        //Tests on tick: mkaes sure the blocks are moving:
-            Grid movedGrid = testerGrid.onTick();
-            //why does this fail?
-            System.out.println("Did the block move?:"+ (testerGrid.movingBlocks.get(0).x+1  == movedGrid.movingBlocks.get(0).x));
-            
-        // Makes sure that the Block Wraps the screen when x>=12
+            //Tests on tick: makes sure the blocks are moving:
+            System.out.println("Did the block move?:" + ((testerGrid.movingBlocks.get(0).x + 1) == testerGrid.moveOneWay().movingBlocks.get(0).x));
+
+            // Makes sure that the Block Wraps the screen when x>=12
             ArrayList<Block> testArr = new ArrayList<>();
             ArrayList<Block> testArray = new ArrayList<>();
             Random rando = new Random();
             int randomY = rando.nextInt((12 - 1) + 1) + 1;
-            System.out.println(randomY);
             Block wrapBlock = new Block(12, randomY);
             testArr.add(wrapBlock);
             testArray.add(makeRandomBlock());
-            Grid wrapGrid = new Grid(testArr,testArray);
+            Grid wrapGrid = new Grid(testArr, testArray);
             Grid wrappedGrid = wrapGrid.onTick();
             Block movedBlock = new Block(0, wrapGrid.movingBlocks.get(0).y);
-            System.out.println("Did the Block Wrap?:"+ wrappedGrid.movingBlocks.get(0).equalBlock(movedBlock));
-            
-            
+            System.out.println("Did the Block Wrap?:" + wrappedGrid.movingBlocks.get(0).equalBlock(movedBlock));
+
         }
-
-        Block block1 = new Block(5, 5);
-        ArrayList<Block> array1 = new ArrayList<>(1);
-        ArrayList<Block> array2 = new ArrayList();
-        Grid testGrid1 = new Grid(array1, array2);
-        Grid testGrid2 = new Grid(testGrid1.addLiveBlock(block1), array2);
-        System.out.println("the first X Value is 5 : " + testGrid2.movingBlocks.get(0).x
-                + " The Moved x value should be 6 : " + testGrid2.moveOneWay().movingBlocks.get(0).x);
-
-        System.out.println("the first X Value is 6 : " + testGrid2.movingBlocks.get(0).x
-                + " The Moved x value should be 7 : " + testGrid2.moveOneWay().movingBlocks.get(0).x);
-
-        Block block = new Block(10, 10);
-        ArrayList<Block> array3 = new ArrayList<>(1);
-        ArrayList<Block> array4 = new ArrayList();
-        Grid testGrid3 = new Grid(array3, array4);
-        Grid testGrid4 = new Grid(testGrid3.addLiveBlock(block), array2);
-        System.out.println("the first X Value is 10 : " + testGrid4.movingBlocks.get(0).x
-                + " The Moved x value should be 11: " + testGrid4.moveOneWay().movingBlocks.get(0).x);
-
-        Block block2 = new Block(5, 5);
-        Block block3 = new Block(5, 4);
-        ArrayList<Block> arrayA = new ArrayList<>();
-        ArrayList<Block> arrayB = new ArrayList();
-
-        Grid testGridA = new Grid(arrayA, arrayB);
-        testGridA.movingBlocks = arrayA;
-        testGridA.deadBlocks = arrayB;
-
-        Grid testGridB = new Grid(testGridA.addLiveBlock(block2), testGridA.addDeadBlock(block3));
-        Grid afterChange = testGridB.changeBlockArray();
-
-        System.out.println("this should return true: " + block3.isOnTop(block2));
-        System.out.println("this should return false: " + block2.isOnTop(block3));
-
-        System.out.println("testGridB's movingBlocks should have 1 thing and has: " + testGridB.movingBlocks.size());
-        System.out.println("testGridB's DeadBlocks should have 1 thing and has: " + testGridB.deadBlocks.size());
-        System.out.println("movingBlocks afterchange should have 1 block in it and it has: " + afterChange.movingBlocks.size());
-        System.out.println("The first grid has 2 blocks: Live block: (5,5) deadblock: (5,4) ("
-                + testGridB.movingBlocks.get(0).x + ", " + testGridB.movingBlocks.get(0).y + ") and ("
-                + testGridB.deadBlocks.get(0).x + "," + testGridB.deadBlocks.get(0).y
-                + ") after call to changeBlock Array: should have 3 blocks total (5,5) (5,4) (5,6): ("
-                + afterChange.movingBlocks.get(0).x + ", " + afterChange.movingBlocks.get(0).y + ")"
-                + "(" + afterChange.deadBlocks.get(0).x + "," + afterChange.deadBlocks.get(0).y + ") ("
-                + afterChange.deadBlocks.get(1).x + ", " + afterChange.deadBlocks.get(1).y + ")");
-
     }
 
 }
