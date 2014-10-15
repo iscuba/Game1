@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import javalib.funworld.*;
 import javalib.colors.*;
 import javalib.worldimages.*;
+import java.util.Random;
+import static movingblocks.Block.makeBlockUnder;
+import static movingblocks.Block.makeRandomBlock;
 
 /**
  *
@@ -53,7 +56,7 @@ public class Grid extends World {
         super();
         this.movingBlocks = moving;
         this.deadBlocks = dead;
-    } 
+    }
 
     public Grid changeBlockArray() {
         ArrayList<Block> tempMove = new ArrayList<>();
@@ -75,45 +78,23 @@ public class Grid extends World {
         return new Grid(tempMove, tempDead);
     }
 
-    public boolean LooseHuh() {
-        return movingBlocks.isEmpty();
-    }
-
-    public boolean WinHuh() {
-        return deadBlocks.get(deadBlocks.size() - 1).y == 16;
-    }
-
-   
-    public boolean offLeftGridHuh() {
-        int num = movingBlocks.size() - 1;
-        return (movingBlocks.get(num).x <= 1);
-    }
-
-    public boolean offRightGridHuh() {
-        int num = movingBlocks.size() - 1;
-        return (movingBlocks.get(num).x >= width - 1);
-    }
-
-    public World onTick() {
-        if (LooseHuh()) {
-            return this.endOfWorld("You loose");
-        } else if (WinHuh()) {
-            return this.endOfWorld("WINNER!");
-
-        } else {
-            return this.moveOneWay();
-        }
-    }
-    
-    public int countDeadBlocks(){
+//    public boolean offLeftGridHuh() {
+//        int num = movingBlocks.size() - 1;
+//        return (movingBlocks.get(num).x <= 1);
+//    }
+//
+//    public boolean offRightGridHuh() {
+//        int num = movingBlocks.size() - 1;
+//        return (movingBlocks.get(num).x >= width - 1);
+//    }
+    public int countDeadBlocks() {
         return deadBlocks.size();
     }
-    
-    public WorldImage back = new RectangleImage(new Posn(0,0),500,810, new Black());
+
+    public WorldImage back = new RectangleImage(new Posn(0, 0), 500, 810, new Black());
     public WorldImage frame = new FrameImage(new Posn(0, 0), 460, 660, new Blue());
-    public WorldImage backFrame = new OverlayImages(back,frame);
+    public WorldImage backFrame = new OverlayImages(back, frame);
     public WorldImage backdrop = new OverlayImages(back, frame);
-    
 
     public WorldImage makeImage() {
         for (int i = 0; i < movingBlocks.size(); i++) {
@@ -125,23 +106,40 @@ public class Grid extends World {
             backdrop = new OverlayImages(backdrop, pic);
         }
         WorldImage score = new TextImage(new Posn(230, 600), "Score: " + deadBlocks.size(), 13, -1, new Red());
-        return new OverlayImages( backdrop, score);
+        return new OverlayImages(backdrop, score);
 
     }
-    
-    public WorldImage lastImage(){
-        WorldImage y =  new TextImage(new Posn (230,330),"Bye", 100, new Green());
-        return new OverlayImages(this.makeImage(),y);
+
+    public WorldImage lastImage() {
+        WorldImage y = new TextImage(new Posn(230, 330), "Bye", 100, new Green());
+        return new OverlayImages(this.makeImage(), y);
     }
 
-    public World onKeyEvent(String ke) {
+    public Grid onKeyEvent(String ke) {
         switch (ke) {
-            case "x":
-                return this.endOfWorld("Goodbye");
             case "s":
                 return changeBlockArray();
             default:
                 return this;
+        }
+    }
+
+    public boolean LooseHuh() {
+        return movingBlocks.isEmpty();
+    }
+
+    public boolean WinHuh() {
+        return deadBlocks.get(deadBlocks.size() - 1).y >= 16;
+    }
+
+    public Grid onTick() {
+        if (LooseHuh()) {
+            return this;
+        } else if (WinHuh()) {
+            return this;
+
+        } else {
+            return this.moveOneWay();
         }
     }
 
@@ -159,8 +157,7 @@ public class Grid extends World {
         }
         return new Grid(movingBlocks, deadBlocks);
     }
-    
-    
+
     public ArrayList<Block> addDeadBlock(Block block) {
         ArrayList<Block> temp = new ArrayList();
         for (int i = 0; i < deadBlocks.size(); i++) {
@@ -190,10 +187,62 @@ public class Grid extends World {
         }
         return temp;
 
+    }
 
+    //For testing fun!!
+    private static Grid MTGrid() {
+        ArrayList<Block> live = new ArrayList<>();
+        ArrayList<Block> dead = new ArrayList<>();
+        return new Grid(live, dead);
+    }
+
+    //makes a grid with 2 stached blocks at a random position. 
+    public static Grid makeRandStackGrid() {
+        Block randBlock = makeRandomBlock();
+        ArrayList<Block> array1 = new ArrayList<>();
+        array1.add(randBlock);
+        ArrayList<Block> array2 = new ArrayList<>();
+        Block block1 = makeBlockUnder(randBlock);
+        array2.add(block1);
+        Grid testGrid = new Grid(array2, array1);
+        return testGrid;
     }
 
     public static void testGrid() {
+
+        
+        int runTimes = 10;
+        for (int i = 0; i <= runTimes; i++) {
+        // Tests onKey when the world is sopped by the user and blocks are stacked. 
+        //there are 2 blocks in g one in L and one in D. if you call g.onKey"s" and the blocks
+        // are on top of eachother, then the size of that, would have to be >= g.D + 1
+            Grid testerGrid = makeRandStackGrid();
+            Grid changedGrid = testerGrid.onKeyEvent("s");
+            System.out.println("the size of deadBlocks of the first Grid should be <= the size of the moved grid:  and is: "
+                    + (testerGrid.deadBlocks.size() <= changedGrid.deadBlocks.size()));
+        // Tests onKey when the world is stopped by the used and the blocks are not stacked. 
+
+        //Tests on tick: mkaes sure the blocks are moving:
+            Grid movedGrid = testerGrid.onTick();
+            //why does this fail?
+            System.out.println("Did the block move?:"+ (testerGrid.movingBlocks.get(0).x+1  == movedGrid.movingBlocks.get(0).x));
+            
+        // Makes sure that the Block Wraps the screen when x>=12
+            ArrayList<Block> testArr = new ArrayList<>();
+            ArrayList<Block> testArray = new ArrayList<>();
+            Random rando = new Random();
+            int randomY = rando.nextInt((12 - 1) + 1) + 1;
+            System.out.println(randomY);
+            Block wrapBlock = new Block(12, randomY);
+            testArr.add(wrapBlock);
+            testArray.add(makeRandomBlock());
+            Grid wrapGrid = new Grid(testArr,testArray);
+            Grid wrappedGrid = wrapGrid.onTick();
+            Block movedBlock = new Block(0, wrapGrid.movingBlocks.get(0).y);
+            System.out.println("Did the Block Wrap?:"+ wrappedGrid.movingBlocks.get(0).equalBlock(movedBlock));
+            
+            
+        }
 
         Block block1 = new Block(5, 5);
         ArrayList<Block> array1 = new ArrayList<>(1);
@@ -205,8 +254,8 @@ public class Grid extends World {
 
         System.out.println("the first X Value is 6 : " + testGrid2.movingBlocks.get(0).x
                 + " The Moved x value should be 7 : " + testGrid2.moveOneWay().movingBlocks.get(0).x);
-        
-        Block block = new Block(10,10);
+
+        Block block = new Block(10, 10);
         ArrayList<Block> array3 = new ArrayList<>(1);
         ArrayList<Block> array4 = new ArrayList();
         Grid testGrid3 = new Grid(array3, array4);
@@ -231,7 +280,7 @@ public class Grid extends World {
 
         System.out.println("testGridB's movingBlocks should have 1 thing and has: " + testGridB.movingBlocks.size());
         System.out.println("testGridB's DeadBlocks should have 1 thing and has: " + testGridB.deadBlocks.size());
-        System.out.println(" I expect movingBlocks after change to have 1 block in it and it has: " + afterChange.movingBlocks.size());
+        System.out.println("movingBlocks afterchange should have 1 block in it and it has: " + afterChange.movingBlocks.size());
         System.out.println("The first grid has 2 blocks: Live block: (5,5) deadblock: (5,4) ("
                 + testGridB.movingBlocks.get(0).x + ", " + testGridB.movingBlocks.get(0).y + ") and ("
                 + testGridB.deadBlocks.get(0).x + "," + testGridB.deadBlocks.get(0).y
@@ -239,5 +288,7 @@ public class Grid extends World {
                 + afterChange.movingBlocks.get(0).x + ", " + afterChange.movingBlocks.get(0).y + ")"
                 + "(" + afterChange.deadBlocks.get(0).x + "," + afterChange.deadBlocks.get(0).y + ") ("
                 + afterChange.deadBlocks.get(1).x + ", " + afterChange.deadBlocks.get(1).y + ")");
+
     }
+
 }

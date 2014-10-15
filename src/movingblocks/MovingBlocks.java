@@ -6,6 +6,7 @@
 package movingblocks;
 
 import static movingblocks.Grid.testGrid;
+import static movingblocks.Block.testBlock;
 
 /**
  *
@@ -25,6 +26,7 @@ public class MovingBlocks {
         game.bigBang(250, 400, .2);
         // Testing the ChangeBlockArray
         testGrid();
+        testBlock();
 
 
     }
